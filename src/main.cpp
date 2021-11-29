@@ -50,15 +50,15 @@ namespace VampiresCastNoShadow
 
 	static void Patch()
 	{
-		REL::Relocation<std::uintptr_t> attach_armor{ REL::ID(15501) };
-		stl::write_thunk_call<AttachBSFadeNode>(attach_armor.address() + 0xA13);
+		REL::Relocation<std::uintptr_t> attach_armor{ REL::ID(15678) };
+		stl::write_thunk_call<AttachBSFadeNode>(attach_armor.address() + 0xB70);
 
 		//torches/weapons/anything with TESMODEL
-		REL::Relocation<std::uintptr_t> attach_weapon{ REL::ID(15569) };
-		stl::write_thunk_call<AttachBSFadeNode>(attach_weapon.address() + 0x2DD);
+		REL::Relocation<std::uintptr_t> attach_weapon{ REL::ID(15746) };
+		stl::write_thunk_call<AttachBSFadeNode>(attach_weapon.address() + 0x2EC);
 
-		REL::Relocation<std::uintptr_t> attach_head{ REL::ID(24228) };
-		stl::write_thunk_call<AttachBSFadeNode>(attach_head.address() + 0x1CD);
+		REL::Relocation<std::uintptr_t> attach_head{ REL::ID(24732) };
+		stl::write_thunk_call<FinishHeadAttach>(attach_head.address() + 0x15B);
 	}
 }
 
@@ -72,11 +72,22 @@ void OnInit(SKSE::MessagingInterface::Message* a_msg)
 	}
 }
 
-extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
+extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
+	SKSE::PluginVersionData v;
+	v.PluginVersion(Version::MAJOR);
+	v.PluginName("Vampires Cast No Shadow");
+	v.AuthorName("powerofthree");
+	v.UsesAddressLibrary(true);
+	v.CompatibleVersions({ SKSE::RUNTIME_LATEST });
+
+	return v;
+}();
+
+void InitializeLog()
 {
 	auto path = logger::log_directory();
 	if (!path) {
-		return false;
+		stl::report_and_fail("Failed to find standard logging directory"sv);
 	}
 
 	*path /= fmt::format(FMT_STRING("{}.log"), Version::PROJECT);
@@ -84,36 +95,25 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
 
 	auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
 
+#ifndef NDEBUG
+	log->set_level(spdlog::level::trace);
+#else
 	log->set_level(spdlog::level::info);
 	log->flush_on(spdlog::level::info);
+#endif
 
 	spdlog::set_default_logger(std::move(log));
-	spdlog::set_pattern("[%H:%M:%S:%e] %v"s);
+	spdlog::set_pattern("[%H:%M:%S] %v"s);
 
 	logger::info(FMT_STRING("{} v{}"), Version::PROJECT, Version::NAME);
-
-	a_info->infoVersion = SKSE::PluginInfo::kVersion;
-	a_info->name = Version::NAME.data();
-	a_info->version = Version::MAJOR;
-
-	if (a_skse->IsEditor()) {
-		logger::critical("Loaded in editor, marking as incompatible"sv);
-		return false;
-	}
-
-	const auto ver = a_skse->RuntimeVersion();
-	if (ver < SKSE::RUNTIME_1_5_39) {
-		logger::critical(FMT_STRING("Unsupported runtime version {}"), ver.string());
-		return false;
-	}
-
-	return true;
 }
 
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {
-	logger::info("loaded plugin");
+	InitializeLog();
 
+	logger::info("loaded plugin");
+	
 	SKSE::Init(a_skse);
 
 	auto messaging = SKSE::GetMessagingInterface();
