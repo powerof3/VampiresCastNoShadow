@@ -1,0 +1,13 @@
+{
+  "name": "vampires-cast-no-shadow",
+  "version-string": "1.1.0",
+  "description": "Vampires Cast No Shadow",
+  "homepage": "",
+  "license": "MIT",
+  "dependencies": [
+    "boost-stl-interfaces",
+    "rsm-binary-io",
+    "spdlog",
+    "xbyak"
+  ]
+}
