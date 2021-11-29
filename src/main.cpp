@@ -35,7 +35,7 @@ namespace VampiresCastNoShadow
 		static inline REL::Relocation<decltype(&thunk)> func;
 	};
 
-	struct FinishHeadAttach
+	struct StoreHeadNodes
 	{
 		static void thunk(RE::Actor* a_actor, RE::NiAVObject* a_root, RE::BSFaceGenNiNode* a_faceNode)
 		{
@@ -58,7 +58,7 @@ namespace VampiresCastNoShadow
 		stl::write_thunk_call<AttachBSFadeNode>(attach_weapon.address() + 0x2DD);
 
 		REL::Relocation<std::uintptr_t> attach_head{ REL::ID(24228) };
-		stl::write_thunk_call<AttachBSFadeNode>(attach_head.address() + 0x1CD);
+		stl::write_thunk_call<StoreHeadNodes>(attach_head.address() + 0x1CD);
 	}
 }
 
