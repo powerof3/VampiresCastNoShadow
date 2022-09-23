@@ -23,7 +23,16 @@ SKSE plugin that stops vampires from casting shadows when out in the sun.
 ```
 git clone https://github.com/powerof3/VampiresCastNoShadow.git
 cd VampiresCastNoShadow
-cmake -B build -S .
+```
+### SSE
+```
+cmake --preset vs2022-windows-vcpkg-se
+cmake --build build --config Release
+```
+### AE
+```
+cmake --preset vs2022-windows-vcpkg-ae
+cmake --build buildae --config Release
 ```
 ## License
 [MIT](LICENSE)
