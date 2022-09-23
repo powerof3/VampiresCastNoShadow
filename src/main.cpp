@@ -50,15 +50,21 @@ namespace VampiresCastNoShadow
 
 	void Patch()
 	{
-		REL::Relocation<std::uintptr_t> attach_armor{ RELOCATION_ID(15501, 15678), OFFSET(0xA13, 0xB70) };
+		REL::Relocation<std::uintptr_t> attach_armor{ RELOCATION_ID(15501, 15678), OFFSET(0xA13, 0xB60) }; //B70 in .353
 		stl::write_thunk_call<AttachBSFadeNode>(attach_armor.address());
+
+		logger::info("Installed armor hook");
 
 		//torches/weapons/anything with TESMODEL
 		REL::Relocation<std::uintptr_t> attach_weapon{ RELOCATION_ID(15569, 15746), OFFSET(0x2DD, 0x2EC) };
 		stl::write_thunk_call<AttachBSFadeNode>(attach_weapon.address());
 
+		logger::info("Installed model hook");
+
 		REL::Relocation<std::uintptr_t> attach_head{ RELOCATION_ID(24228, 24732), OFFSET(0x1CD, 0x15B) };
 		stl::write_thunk_call<StoreHeadNodes>(attach_head.address());
+
+		logger::info("Installed head hook");
 	}
 }
 
@@ -83,7 +89,7 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
 	v.PluginName("Vampires Cast No Shadow");
 	v.AuthorName("powerofthree");
 	v.UsesAddressLibrary();
-	v.UsesNoStructs();
+	v.UsesUpdatedStructs();
 	v.CompatibleVersions({ SKSE::RUNTIME_LATEST });
 
 	return v;
@@ -135,7 +141,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 {
 	InitializeLog();
 
-	logger::info("loaded");
+	logger::info("Game version : {}", a_skse->RuntimeVersion().string());
 
 	SKSE::Init(a_skse);
 
