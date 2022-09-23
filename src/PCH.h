@@ -19,9 +19,17 @@ namespace stl
 	template <class T>
 	void write_thunk_call(std::uintptr_t a_src)
 	{
-		auto& trampoline = SKSE::GetTrampoline();
+		SKSE::AllocTrampoline(14);
+
+	    auto& trampoline = SKSE::GetTrampoline();
 		T::func = trampoline.write_call<5>(a_src, T::thunk);
 	}
 }
+
+#ifdef SKYRIM_AE
+#	define OFFSET(se, ae) ae
+#else
+#	define OFFSET(se, ae) se
+#endif
 
 #include "Version.h"

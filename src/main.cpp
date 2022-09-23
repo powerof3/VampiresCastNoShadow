@@ -1,16 +1,16 @@
-static RE::BGSKeyword* vampireKYWD;
+static RE::BGSKeyword* vampireKYWD{ nullptr };
 
 namespace VampiresCastNoShadow
 {
 	struct detail
-	{		
+	{
 		static void stop_shadow_cast(RE::NiAVObject* a_object)
 		{
 			using FLAG = RE::BSShaderProperty::EShaderPropertyFlag8;
 
 			RE::BSVisit::TraverseScenegraphGeometries(a_object, [&](RE::BSGeometry* a_geometry) -> RE::BSVisit::BSVisitControl {
 				const auto effect = a_geometry->properties[RE::BSGeometry::States::kEffect];
-				const auto lightingShader = netimmerse_cast<RE::BSLightingShaderProperty*>(effect.get()); 
+				const auto lightingShader = netimmerse_cast<RE::BSLightingShaderProperty*>(effect.get());
 				if (lightingShader) {
 					lightingShader->SetFlags(FLAG::kCastShadows, false);
 				}
@@ -18,7 +18,7 @@ namespace VampiresCastNoShadow
 			});
 		}
 	};
-	
+
 	struct AttachBSFadeNode
 	{
 		static void thunk(RE::NiAVObject* a_object, RE::BSFadeNode* a_root3D)
@@ -48,52 +48,51 @@ namespace VampiresCastNoShadow
 		static inline REL::Relocation<decltype(&thunk)> func;
 	};
 
-	static void Patch()
+	void Patch()
 	{
-		REL::Relocation<std::uintptr_t> attach_armor{ REL::ID(15501) };
-		stl::write_thunk_call<AttachBSFadeNode>(attach_armor.address() + 0xA13);
+		REL::Relocation<std::uintptr_t> attach_armor{ RELOCATION_ID(15501, 15678), OFFSET(0xA13, 0xB70) };
+		stl::write_thunk_call<AttachBSFadeNode>(attach_armor.address());
 
 		//torches/weapons/anything with TESMODEL
-		REL::Relocation<std::uintptr_t> attach_weapon{ REL::ID(15569) };
-		stl::write_thunk_call<AttachBSFadeNode>(attach_weapon.address() + 0x2DD);
+		REL::Relocation<std::uintptr_t> attach_weapon{ RELOCATION_ID(15569, 15746), OFFSET(0x2DD, 0x2EC) };
+		stl::write_thunk_call<AttachBSFadeNode>(attach_weapon.address());
 
-		REL::Relocation<std::uintptr_t> attach_head{ REL::ID(24228) };
-		stl::write_thunk_call<StoreHeadNodes>(attach_head.address() + 0x1CD);
+		REL::Relocation<std::uintptr_t> attach_head{ RELOCATION_ID(24228, 24732), OFFSET(0x1CD, 0x15B) };
+		stl::write_thunk_call<StoreHeadNodes>(attach_head.address());
 	}
 }
 
 void OnInit(SKSE::MessagingInterface::Message* a_msg)
 {
-	if (a_msg->type == SKSE::MessagingInterface::kDataLoaded) {
-		if (vampireKYWD = RE::TESForm::LookupByID<RE::BGSKeyword>(0x000A82BB); vampireKYWD) {
-			SKSE::AllocTrampoline(28);
-			VampiresCastNoShadow::Patch();
-		}
+	switch (a_msg->type) {
+	case SKSE::MessagingInterface::kPostLoad:
+		VampiresCastNoShadow::Patch();
+		break;
+	case SKSE::MessagingInterface::kDataLoaded:
+		vampireKYWD = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("Vampire");
+		break;
+	default:
+		break;
 	}
 }
 
+#ifdef SKYRIM_AE
+extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
+	SKSE::PluginVersionData v;
+	v.PluginVersion(Version::MAJOR);
+	v.PluginName("Vampires Cast No Shadow");
+	v.AuthorName("powerofthree");
+	v.UsesAddressLibrary();
+	v.UsesNoStructs();
+	v.CompatibleVersions({ SKSE::RUNTIME_LATEST });
+
+	return v;
+}();
+#else
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
 {
-	auto path = logger::log_directory();
-	if (!path) {
-		return false;
-	}
-
-	*path /= fmt::format(FMT_STRING("{}.log"), Version::PROJECT);
-	auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
-
-	auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
-
-	log->set_level(spdlog::level::info);
-	log->flush_on(spdlog::level::info);
-
-	spdlog::set_default_logger(std::move(log));
-	spdlog::set_pattern("[%H:%M:%S:%e] %v"s);
-
-	logger::info(FMT_STRING("{} v{}"), Version::PROJECT, Version::NAME);
-
 	a_info->infoVersion = SKSE::PluginInfo::kVersion;
-	a_info->name = Version::NAME.data();
+	a_info->name = "Vampires Cast No Shadow";
 	a_info->version = Version::MAJOR;
 
 	if (a_skse->IsEditor()) {
@@ -109,10 +108,34 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
 
 	return true;
 }
+#endif
+
+void InitializeLog()
+{
+	auto path = logger::log_directory();
+	if (!path) {
+		stl::report_and_fail("Failed to find standard logging directory"sv);
+	}
+
+	*path /= fmt::format(FMT_STRING("{}.log"), Version::PROJECT);
+	auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
+
+	auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
+
+	log->set_level(spdlog::level::info);
+	log->flush_on(spdlog::level::info);
+
+	spdlog::set_default_logger(std::move(log));
+	spdlog::set_pattern("[%H:%M:%S] %v"s);
+
+	logger::info(FMT_STRING("{} v{}"), Version::PROJECT, Version::NAME);
+}
 
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {
-	logger::info("loaded plugin");
+	InitializeLog();
+
+	logger::info("loaded");
 
 	SKSE::Init(a_skse);
 
