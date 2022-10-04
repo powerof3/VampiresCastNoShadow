@@ -52,7 +52,7 @@ namespace VampiresCastNoShadow
 	{
 		//B70 in .353
 		//B60 in .629+
-		REL::Relocation<std::uintptr_t> attach_armor{ RELOCATION_ID(15501, 15678), OFFSET(0xA13, 0xB60) };
+		REL::Relocation<std::uintptr_t> attach_armor{ RELOCATION_ID(15501, 15678), OFFSET(0xA13, 0xB70) };
 		stl::write_thunk_call<AttachBSFadeNode>(attach_armor.address());
 
 		logger::info("Installed armor hook");
