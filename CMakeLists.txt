@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
-set(NAME "po3_VampiresCastNoShadow")
-set(VERSION 1.2.1)
+set(NAME "po3_VampiresCastNoShadow" CACHE STRING "")
+set(VERSION 1.2.1  CACHE STRING "")
 set(AE_VERSION 1)
 
 # ---- Options ----
