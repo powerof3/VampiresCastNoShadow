@@ -52,13 +52,13 @@ namespace VampiresCastNoShadow
 	{
 		//B70 in .353
 		//B60 in .629+
-		REL::Relocation<std::uintptr_t> attach_armor{ RELOCATION_ID(15501, 15678), OFFSET(0xA13, 0xB60) };
+		REL::Relocation<std::uintptr_t> attach_armor{ RELOCATION_ID(15501, 15678), OFFSET_3(0xA13, 0xB60, 0xB0A) };
 		stl::write_thunk_call<AttachBSFadeNode>(attach_armor.address());
 
 		logger::info("Installed armor hook");
 
 		//torches/weapons/anything with TESMODEL
-		REL::Relocation<std::uintptr_t> attach_weapon{ RELOCATION_ID(15569, 15746), OFFSET(0x2DD, 0x2EC) };
+		REL::Relocation<std::uintptr_t> attach_weapon{ RELOCATION_ID(15569, 15746), OFFSET_3(0x2DD, 0x2EC, 0x32E) };
 		stl::write_thunk_call<AttachBSFadeNode>(attach_weapon.address());
 
 		logger::info("Installed model hook");
