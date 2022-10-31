@@ -2,5 +2,5 @@
 	path = extern/CommonLibSSE
 	url = https://github.com/powerof3/CommonLibSSE
 [submodule "CommonLibVR"]
-	path = CommonLibVR
+	path = extern/CommonLibVR
 	url = https://github.com/alandtse/CommonLibVR.git
