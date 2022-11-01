@@ -1,7 +1,8 @@
 # Vampires Cast No Shadow
 
 SKSE/VR plugin that stops vampires from casting shadows when out in the sun.
-[SSE/AE/VR](https://www.nexusmods.com/skyrimspecialedition/mods/46107)
+* [SSE/AE](https://www.nexusmods.com/skyrimspecialedition/mods/46107)
+* [VR](https://www.nexusmods.com/skyrimspecialedition/mods/75797/)
 
 ## Requirements
 * [CMake](https://cmake.org/)
