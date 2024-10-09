@@ -9,7 +9,7 @@ namespace VampiresCastNoShadow
 			using FLAG = RE::BSShaderProperty::EShaderPropertyFlag8;
 
 			RE::BSVisit::TraverseScenegraphGeometries(a_object, [&](RE::BSGeometry* a_geometry) -> RE::BSVisit::BSVisitControl {
-				const auto effect = a_geometry->properties[RE::BSGeometry::States::kEffect];
+				const auto& effect = a_geometry->properties[RE::BSGeometry::States::kEffect];
 				const auto lightingShader = netimmerse_cast<RE::BSLightingShaderProperty*>(effect.get());
 				if (lightingShader) {
 					lightingShader->SetFlags(FLAG::kCastShadows, false);
@@ -32,7 +32,7 @@ namespace VampiresCastNoShadow
 				detail::stop_shadow_cast(a_object);
 			}
 		}
-		static inline REL::Relocation<decltype(&thunk)> func;
+		static inline REL::Relocation<decltype(thunk)> func;
 	};
 
 	struct StoreHeadNodes
@@ -45,7 +45,7 @@ namespace VampiresCastNoShadow
 				detail::stop_shadow_cast(a_faceNode);
 			}
 		}
-		static inline REL::Relocation<decltype(&thunk)> func;
+		static inline REL::Relocation<decltype(thunk)> func;
 	};
 
     void Install()

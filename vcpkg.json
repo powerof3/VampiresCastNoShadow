@@ -5,9 +5,9 @@
   "homepage": "",
   "license": "MIT",
   "dependencies": [
-    "boost-stl-interfaces",
     "rsm-binary-io",
     "spdlog",
     "xbyak"
-  ]
+  ],
+  "builtin-baseline": "797ae22b76f0e78c3aeb03d625722a0cbfe9f52e"
 }

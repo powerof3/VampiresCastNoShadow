@@ -14,9 +14,11 @@ jobs:
     if: github.repository_owner == 'powerof3'
     uses: adya/pack-skse-mod/.github/workflows/pack.yml@main
     with:
-      AE_353_BRANCH: master-1.6.353
+      CMAKE_VR_CONFIG_PRESET: ''
+      CMAKE_VR_BUILD_PRESET: ''
       FOMOD_INCLUDE_PDB: true
       FOMOD_MOD_NAME: "Vampires Cast No Shadow"
       FOMOD_MOD_AUTHOR: "powerofthree"
       FOMOD_MOD_NEXUS_ID: "46107"
       PUBLISH_ARCHIVE_TYPE: '7z'
+      VCPKG_COMMIT_ID: '797ae22b76f0e78c3aeb03d625722a0cbfe9f52e'
